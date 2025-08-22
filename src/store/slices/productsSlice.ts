@@ -93,18 +93,33 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async () => {
-    console.log('fetchProducts: Starting API call to FakeStore');
+    console.log('fetchProducts: Starting API call to FakeStore', {
+      url: 'https://fakestoreapi.com/products',
+      environment: process.env.NODE_ENV,
+      userAgent: navigator.userAgent
+    });
     try {
       const response = await fetch('https://fakestoreapi.com/products');
-      console.log('fetchProducts: Response received', response.status, response.ok);
+      console.log('fetchProducts: Response received', {
+        status: response.status,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       if (!response.ok) {
-        throw new Error('Failed to fetch products');
+        throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
       const data = await response.json();
-      console.log('fetchProducts: Data parsed', data.length, 'products');
+      console.log('fetchProducts: Data parsed successfully', {
+        count: data.length,
+        sampleProduct: data[0]?.title
+      });
       return data;
-    } catch (error) {
-      console.error('fetchProducts: Error occurred', error);
+    } catch (error: any) {
+      console.error('fetchProducts: Error occurred', {
+        error,
+        message: error?.message,
+        stack: error?.stack
+      });
       throw error;
     }
   }

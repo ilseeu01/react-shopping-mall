@@ -31,7 +31,8 @@ const ProductList: React.FC = () => {
       categories: categories.length, 
       isLoading, 
       error,
-      selectedCategory 
+      selectedCategory,
+      environment: process.env.NODE_ENV
     });
   }, [products, categories, isLoading, error, selectedCategory]);
 
@@ -42,8 +43,12 @@ const ProductList: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '16rem' }}>
-        <div style={{ fontSize: '1.5rem', color: '#666' }}>Loading...</div>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '16rem' }}>
+        <div style={{ fontSize: '1.5rem', color: '#666', marginBottom: '1rem' }}>Loading products...</div>
+        <div style={{ fontSize: '1rem', color: '#999' }}>Environment: {process.env.NODE_ENV}</div>
+        <div style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.5rem' }}>
+          Products: {products.length} | Categories: {categories.length}
+        </div>
       </div>
     );
   }
@@ -52,6 +57,17 @@ const ProductList: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', color: '#dc2626', padding: '2rem' }}>
         <p>Error: {error}</p>
+        <div style={{ fontSize: '0.875rem', color: '#999', marginTop: '1rem' }}>
+          Environment: {process.env.NODE_ENV} | Products: {products.length}
+        </div>
+        {products.length > 0 && (
+          <button
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '0.375rem' }}
+          >
+            Try Again
+          </button>
+        )}
       </div>
     );
   }
