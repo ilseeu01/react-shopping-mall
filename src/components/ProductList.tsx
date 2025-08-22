@@ -10,13 +10,35 @@ const ProductList: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchCategories());
+    console.log('ProductList: Starting to fetch products and categories');
+    dispatch(fetchProducts()).then((result) => {
+      console.log('fetchProducts result:', result);
+    }).catch((error) => {
+      console.error('fetchProducts error:', error);
+    });
+    
+    dispatch(fetchCategories()).then((result) => {
+      console.log('fetchCategories result:', result);
+    }).catch((error) => {
+      console.error('fetchCategories error:', error);
+    });
   }, [dispatch]);
+
+  // 디버깅을 위한 상태 로그
+  useEffect(() => {
+    console.log('ProductList: State updated', { 
+      products: products.length, 
+      categories: categories.length, 
+      isLoading, 
+      error,
+      selectedCategory 
+    });
+  }, [products, categories, isLoading, error, selectedCategory]);
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
     : products.filter(product => product.category === selectedCategory);
+
 
   if (isLoading) {
     return (
