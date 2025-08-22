@@ -1,12 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
 import { updateQuantity, removeFromCart, clearCart } from '../store/slices/cartSlice';
 
 const Cart: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { items, total } = useAppSelector((state) => state.cart);
+  const { user } = useAppSelector((state) => state.auth);
 
   const handleQuantityChange = (id: number, quantity: number) => {
     dispatch(updateQuantity({ id, quantity }));
@@ -21,10 +23,22 @@ const Cart: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    // 결제 처리 로직 (현재는 간단한 알림)
-    alert('결제가 완료되었습니다!');
-    // 결제 완료 후 장바구니 초기화
-    dispatch(clearCart());
+    // 로그인 체크
+    if (!user) {
+      const shouldLogin = window.confirm('결제를 진행하려면 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
+      if (shouldLogin) {
+        navigate('/login');
+      }
+      return;
+    }
+
+    // 결제 처리 로직
+    const shouldProceed = window.confirm(`총 $${total.toFixed(2)}를 결제하시겠습니까?`);
+    if (shouldProceed) {
+      alert('결제가 완료되었습니다!');
+      // 결제 완료 후 장바구니 초기화
+      dispatch(clearCart());
+    }
   };
 
   if (items.length === 0) {
@@ -122,12 +136,17 @@ const Cart: React.FC = () => {
                 </div>
               </div>
             </div>
+            {!user && (
+              <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fef3c7', border: '1px solid #f59e0b', borderRadius: '0.375rem', fontSize: '0.875rem', color: '#92400e' }}>
+                💡 로그인하면 결제를 진행할 수 있습니다.
+              </div>
+            )}
             <button 
               onClick={handleCheckout}
               className="btn btn-primary" 
               style={{ width: '100%', padding: '0.75rem 1rem', fontWeight: '500' }}
             >
-              Proceed to Checkout
+              {user ? 'Proceed to Checkout' : 'Login to Checkout'}
             </button>
             <Link
               to="/"

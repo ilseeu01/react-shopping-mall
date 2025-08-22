@@ -67,11 +67,28 @@ const ProductList: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {filteredProducts.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <p style={{ fontSize: '1.125rem', color: '#6b7280', marginBottom: '1rem' }}>
+            {selectedCategory === 'all' ? '상품을 불러오는 중입니다...' : `'${selectedCategory}' 카테고리에 상품이 없습니다.`}
+          </p>
+          {selectedCategory !== 'all' && (
+            <button
+              onClick={() => dispatch(setSelectedCategory('all'))}
+              className="btn btn-primary"
+              style={{ padding: '0.5rem 1rem' }}
+            >
+              모든 상품 보기
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-4">
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
